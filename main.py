@@ -217,5 +217,4 @@ def organizar_players(room):
 
 
 if __name__ == '__main__':
-    socket.run(app, host='192.168.1.102', port=3000, debug=True)
-
+    socket.run(app, host='127.0.0.1', port=3000, debug=True)
