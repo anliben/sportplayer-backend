@@ -1,4 +1,3 @@
-import json
 from pprint import pprint
 import random
 from shared.player import Player
@@ -18,14 +17,15 @@ class SocketCashGamex1:
 
         if self.socket['request'] == 'addPlayer':
             self.insertPlayer()
+
         elif self.socket['request'] == 'jogarCarta':
             self.jogarCarta()
 
     def jogarCarta(self):
         manilha = self.socket['manilha']
-        numero = self.socket["carta"]["numero"]
-        naipe = self.socket["carta"]["naipe"]
-        index = self.socket["carta"]["index"]
+        numero = self.socket['carta']['numero']
+        naipe = self.socket['carta']['naipe']
+        index = self.socket['carta']['index']
 
         player = engine.find_player('1')
         engine.jogarCarta(
@@ -116,12 +116,12 @@ class SocketCashGamex1:
         manilha = baralho.retornaManilhas()
         if jogador[0].rodadas == 0 and jogador[1].rodadas == 0:
             if jogador[0].pontos == 0 and jogador[1].pontos == 0:
-                jogadores = ["jogador1", "jogador2"]
+                jogadores = ['jogador1', 'jogador2']
                 sorteado = random.choice(jogadores)
-                if sorteado == "jogador1":
+                if sorteado == 'jogador1':
                     jogador[0].primeiro = True
                     jogador[1].ultimo = True
-                elif sorteado == "jogador2":
+                elif sorteado == 'jogador2':
                     jogador[1].primeiro = True
                     jogador[0].ultimo = True
 
