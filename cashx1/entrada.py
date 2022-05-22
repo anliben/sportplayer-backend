@@ -13,13 +13,18 @@ class SocketCashGamex1:
         self.socket = socket
         self.room = self.socket['room']
         join_room(self.room)
-        print(self.socket)
+
 
         if self.socket['request'] == 'addPlayer':
             self.insertPlayer()
 
         elif self.socket['request'] == 'jogarCarta':
             self.jogarCarta()
+        
+        players = engine.find_player_begin(self.room)
+        for i in players:
+            i.update()
+
 
     def jogarCarta(self):
         manilha = self.socket['manilha']
@@ -28,19 +33,14 @@ class SocketCashGamex1:
         index = self.socket['carta']['index']
 
         player = engine.find_player('1')
+
         engine.jogarCarta(
             self.socket['room'],
             {
                 'numero': numero, 'naipe': naipe,
                 'index': index}, self.socket['jogador'])
-
-        if player[0]['rodadas'] >= 2:
-            engine.adicionarPonto('1', player[0]['username'])
-        if player[1]['rodadas'] >= 2:
-            engine.adicionarPonto('1',
-                                  player[1]['username'])
-
-        engine.countCartasJogadas(self.socket['room'], self.socket['jogador'])
+                        
+        #engine.countCartasJogadas(self.socket['room'], self.socket['jogador'])
 
         emit('jogarCarta', {
             'numero': numero,
@@ -49,13 +49,13 @@ class SocketCashGamex1:
             'jogador': self.socket['jogador'],
             'jogadores': [player[0], player[1]]
         }, broadcast=True)
-        pprint(player)
-
-        if player[0]['countCartas'] == 1 and player[1]['countCartas'] == 1 or player[0]['countCartas'] == 2 and \
-                player[1]['countCartas'] == 2 or player[0]['countCartas'] == 3 and player[1]['countCartas'] == 3:
+        
+        if len(player[0]['mao']) == 0 and len(player[1]['mao']) == 0:
+            self.nova_rodada('1')
+        try:
             ganhador = engine.verificarGanhador(
-                player[0]['cartasJogadas'][0],
-                player[1]['cartasJogadas'][0],
+                player[0]['cartasJogadas'][-1],
+                player[1]['cartasJogadas'][-1],
                 manilha)
             engine.adicionarRodada('1',
                                    player[0]['cartasJogadas'][0],
@@ -64,11 +64,22 @@ class SocketCashGamex1:
             engine.limparCartaJogada('1')
 
             players = engine.find_player('1')
+            if player[0]['rodadas'] >= 2:
+                engine.adicionarPonto('1', player[0]['username'])
+                self.nova_rodada('1')
+            if player[1]['rodadas'] >= 2:
+                engine.adicionarPonto('1', player[1]['username'])
+                self.nova_rodada('1')
             emit('rodada', {
                 'jogadores': players
             }, broadcast=True)
-
-        if len(player[0]['mao']) == 0 and len(player[1]['mao']) == 0:
+        except:
+            pass
+        if player[0]['rodadas'] >= 2:
+            engine.adicionarPonto('1', player[0]['username'])
+            self.nova_rodada('1')
+        if player[1]['rodadas'] >= 2:
+            engine.adicionarPonto('1', player[1]['username'])
             self.nova_rodada('1')
 
     def nova_rodada(self, room):
@@ -80,8 +91,9 @@ class SocketCashGamex1:
         players = engine.find_player_begin(room)
         players[0].criarMao(baralho)
         players[1].criarMao(baralho)
+        players[0].rodadas = 0
+        players[1].rodadas = 0
         player = engine.find_player(room)
-        engine.resetarRodada(room)
         emit('novaMao', {
             'jogadores': [
                 player[0],
@@ -94,8 +106,10 @@ class SocketCashGamex1:
 
         players = engine.find_player('1')
 
-        if len(players) >= 2 and len(players) <= 2:
+        if len(players) >= 2:
             jogador1, jogador2, vira, manilha = self.organizar_playersx1()
+            print('jogador1', jogador1)
+            print('jogador2', jogador2)
 
             emit('findPlayersx1', {
                 'jogadores': [jogador1.data(), jogador2.data()],
