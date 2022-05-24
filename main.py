@@ -1,30 +1,36 @@
 from socket import socket
-from flask import Flask, session
-from flask_socketio import SocketIO, send, emit, join_room, leave_room, rooms
+from flask import Flask
+from flask_socketio import SocketIO
 from flask_cors import CORS
-from kivy.storage.jsonstore import JsonStore
 from cashx1.engine import Engine
-from shared.player import Player
-from shared.baralho import Baralho
-from shared.carta import Carta
-import random
-from random import choice
-import string
-from pprint import pprint
 from cashx1.entrada import SocketCashGamex1
+
+
 
 engine = Engine()
 
 app = Flask(__name__)
+
+
 app.config['SECRET_KEY'] = 'ADSDASDASD4234X3'
 cors = CORS(app, resources={r"*": {"origins": "*"}})
-
 socket = SocketIO(app, cors_allowed_origins='*')
 
-db = JsonStore("db.json")
+
+@socket.on('addPlayerCashGameX1')
+def on_addPlayer(data):
+    SocketCashGamex1(data)
 
 
-def gerador_id(tamanho):
+@socket.on('cartaPlayerCashGameX1')
+def on_cartaPlayer(data):
+    SocketCashGamex1(data)
+
+
+
+#ignorar código abaixo para não gerar erro temporário
+
+""" def gerador_id(tamanho):
     valores = string.ascii_lowercase
     senha = ''
     for i in range(tamanho):
@@ -120,15 +126,6 @@ def on_findPlayers(data):
         emit('findPlayers', player)
 
 
-@socket.on('addPlayerCashGameX1')
-def on_addPlayer(data):
-    SocketCashGamex1(data)
-
-
-@socket.on('cartaPlayerCashGameX1')
-def on_cartaPlayer(data):
-    SocketCashGamex1(data)
-
 
 @socket.on('insertPlayer')
 def on_insertPlayer(data):
@@ -215,6 +212,6 @@ def organizar_players(room):
 
     return [jogador[0], jogador[1], jogador[2], jogador[3], vira, manilha]
 
-
+ """
 if __name__ == '__main__':
     socket.run(app, host='127.0.0.1', port=3000, debug=True)
