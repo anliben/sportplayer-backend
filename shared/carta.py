@@ -43,13 +43,13 @@ class Carta():
     def retornarCarta(self):
         
         if self.numero == 1:
-            return {'naipe': 'A', 'numero': 'A'}
+            return {'naipe': 'A', 'numero': self.numero}
         elif self.numero == 13:
-            return {'naipe': 'K', 'numero': 'K'}
+            return {'naipe': 'K', 'numero': self.numero}
         elif self.numero == 12:
-            return {'naipe': 'J', 'numero': 'J'}
+            return {'naipe': 'J', 'numero': self.numero}
         elif self.numero == 11:
-            return {'naipe': 'Q', 'numero': 'Q'}
+            return {'naipe': 'Q', 'numero': self.numero}
         else:
             return {'naipe': self.naipe, 'numero': self.numero}
 
