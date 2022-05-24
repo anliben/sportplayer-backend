@@ -59,10 +59,9 @@ class Player(Observador):
             count += 1
         return hands
     
-    def adicionarPonto(self):
+    def adicionarPonto(self, score: int) -> None:
         print('adicionando ponto')
-        self.pontos += 3
-        #self.cartasJogadas = []
+        self.pontos += score
     
     def adicionarRodada(self):
         self.rodadas += 1

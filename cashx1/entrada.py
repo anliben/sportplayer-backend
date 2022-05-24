@@ -12,6 +12,7 @@ class SocketCashGamex1:
     def __init__(self, socket):
         self.socket = socket
         self.room = self.socket['room']
+        self.pontos = 1
         join_room(self.room)
 
 
@@ -21,11 +22,60 @@ class SocketCashGamex1:
         elif self.socket['request'] == 'jogarCarta':
             self.jogarCarta()
         
-        players = engine.find_player_begin(self.room)
+        elif self.socket['request'] == 'truco':
+            self.pontos += 3
+            self.truco()
+        
+        elif self.socket['request'] == 'increase':
+            self.pontos += 3
+            self.increase()
+            print('alguem pediu increase')
+        
+        elif self.socket['request'] == 'escape':
+            self.pontos = 1
+            print('alguem pediu escape')
+
+        elif self.socket['request'] == 'accept':
+            self.pontos = 3
+            print('alguem aceitou')
+        
+        # código comentado para nova tarefa
+        """ players = engine.find_player_begin(self.room)
         for i in players:
-            i.update()
+            i.update() """
+    
+    def truco(self):
+        player = engine.find_player('1')
+        
+        emit('truco', {
+            'jogador': self.socket['jogador'],
+            'jogadores': [player[0], player[1]],
+        }, broadcast=True)
+    
+    def increase(self):
+        player = engine.find_player('1')
+        
+        emit('increase', {
+            'jogador': self.socket['jogador'],
+            'jogadores': [player[0], player[1]],
+        }, broadcast=True)
 
-
+    def escape(self):
+        player = engine.find_player('1')
+        
+        emit('truco', {
+            'jogador': self.socket['jogador'],
+            'jogadores': [player[0], player[1]],
+        }, broadcast=True)
+    
+    def accept(self):
+        player = engine.find_player('1')
+        
+        emit('truco', {
+            'jogador': self.socket['jogador'],
+            'jogadores': [player[0], player[1]],
+        }, broadcast=True)
+    
     def jogarCarta(self):
         manilha = self.socket['manilha']
         numero = self.socket['carta']['numero']
@@ -65,10 +115,10 @@ class SocketCashGamex1:
 
             players = engine.find_player('1')
             if player[0]['rodadas'] >= 2:
-                engine.adicionarPonto('1', player[0]['username'])
+                engine.adicionarPonto('1', player[0]['username'], self.pontos)
                 self.nova_rodada('1')
             if player[1]['rodadas'] >= 2:
-                engine.adicionarPonto('1', player[1]['username'])
+                engine.adicionarPonto('1', player[1]['username'], self.pontos)
                 self.nova_rodada('1')
             emit('rodada', {
                 'jogadores': players
@@ -76,13 +126,14 @@ class SocketCashGamex1:
         except:
             pass
         if player[0]['rodadas'] >= 2:
-            engine.adicionarPonto('1', player[0]['username'])
+            engine.adicionarPonto('1', player[0]['username'], self.pontos)
             self.nova_rodada('1')
         if player[1]['rodadas'] >= 2:
-            engine.adicionarPonto('1', player[1]['username'])
+            engine.adicionarPonto('1', player[1]['username'], self.pontos)
             self.nova_rodada('1')
 
     def nova_rodada(self, room):
+        print('indo para nova rodada')
         baralho = Baralho()
         baralho.embaralhar()
         baralho.definirVira(baralho)

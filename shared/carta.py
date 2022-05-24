@@ -4,9 +4,9 @@ class Carta():
         "3": 10,
         "2": 9,
         "1": 8,
-        "13": 7,
-        "12": 6,
-        "11": 5,
+        "13": 13,
+        "12": 12,
+        "11": 11,
         "7": 4,
         "6": 3,
         "5": 2,
@@ -41,14 +41,15 @@ class Carta():
             raise "Erro"
     
     def retornarCarta(self):
+        
         if self.numero == 1:
-            return {'naipe': 'A', 'numero': self.numero}
+            return {'naipe': 'A', 'numero': 'A'}
         elif self.numero == 13:
-            return {'naipe': 'K', 'numero': self.numero}
+            return {'naipe': 'K', 'numero': 'K'}
         elif self.numero == 12:
-            return {'naipe': 'J', 'numero': self.numero}
+            return {'naipe': 'J', 'numero': 'J'}
         elif self.numero == 11:
-            return {'naipe': 'Q', 'numero': self.numero}
+            return {'naipe': 'Q', 'numero': 'Q'}
         else:
             return {'naipe': self.naipe, 'numero': self.numero}
 
