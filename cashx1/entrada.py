@@ -42,7 +42,7 @@ class SocketCashGamex1:
 
         # Subir aposta (quando pedido truco)
         elif event == 'increase':
-            self.pontos = += 3
+            self.pontos += 3
             self.increase()
 
         # Fugir da mao jogada (quando pedido truco)
