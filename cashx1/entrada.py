@@ -18,7 +18,7 @@ class SocketCashGamex1:
 
         Args:
             socket (_type_): _description_
-        """        
+        """
         self.socket = socket
         self.room = self.socket["room"]
         self.pontos = 1
@@ -27,36 +27,34 @@ class SocketCashGamex1:
         # Captura o evento enviado
         event = self.socket["request"]
 
-        # Define a ação executada com base no evento
-        match event:
-            # Adicionar novo usuário
-            case "addPlayer":
-                self.insertPlayer()
+        # Adiciona um novo usuario
+        if event == "addPlayer":
+            self.addPlayer()
 
-            # Jogar uma carta
-            case "jogarCarta":
-                self.jogarCarta()
+        # Jogar uma nova carta
+        elif event == "jogarCarta":
+            self.jogarCarta()
 
-            # Pedir truco
-            case "truco":
-                self.pontos += 3
-                self.truco()
+        # Pedir Truco
+        elif event == 'truco':
+            self.pontos = 3
+            self.truco()
 
-            # Subir a aposta (quando pedido truco)
-            case "increase":
-                self.pontos += 3
-                self.increase()
-                print("alguem pediu increase")
+        # Subir aposta (quando pedido truco)
+        elif event == 'increase':
+            self.pontos = += 3
+            self.increase()
 
-            # Fugir da mão jogada (quando pedido truco)
-            case "escape":
-                self.pontos = 1
-                print("alguem pediu escape")
+        # Fugir da mao jogada (quando pedido truco)
+        elif event == 'escape':
+            self.pontos = 1
+            self.escape()
 
-            # Aceitar o pedido de aumento de aposta (quando aumentado o truco)
-            case "accept":
-                self.pontos = 3
-                print("alguem aceitou")
+        # Aceitar o pedido de aumento da aposta (quando pedido truco)
+        elif event == 'accept':
+            self.pontos = 3
+            self.accept()
+
 
     def truco(self):
         player = engine.find_player("1")
