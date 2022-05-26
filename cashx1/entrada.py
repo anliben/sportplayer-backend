@@ -8,7 +8,17 @@ engine = Engine()
 
 
 class SocketCashGamex1:
-    def __init__(self, socket):
+    """Socket Cash Game x1
+
+    NOTE: Está função é para o cashgame x1, todos os parâmetros devem ser passados via socket.
+    """
+
+    def __init__(self, socket: any):
+        """Contrutor da Classe SocketCashGamex1
+
+        Args:
+            socket (_type_): _description_
+        """        
         self.socket = socket
         self.room = self.socket["room"]
         self.pontos = 1

@@ -1,0 +1,11 @@
+{
+    "name": "Socket Sport Player",
+    "version": 2,
+    "builds": [{
+        "src": "*py",
+        "use": "@sportplayer/now-flask"
+    }],
+    "routes": [
+        { "src": "(.*)", "dest": "main.py" }
+    ]
+}
