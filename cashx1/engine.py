@@ -1,3 +1,4 @@
+from pprint import pprint
 from typing import Type
 from shared.observador import Observador
 from shared.jogo import Jogo
@@ -114,10 +115,10 @@ class Engine:
         elif ganhador == "Empate":
             pass
     
-    def adicionarPonto(self, room, username):
+    def adicionarPonto(self, room, username, score: int) -> None:
         for player in self.players:
             if player.room == room and player.username == username:
-                player.adicionarPonto()
+                player.adicionarPonto(score)
 
     def adicionarRodada(self, room, carta1,carta2, ganhador):
         carta1 = Carta(carta1['numero'], carta1['naipe'])
@@ -126,7 +127,7 @@ class Engine:
         for player in self.players:
             if player.room == room:
                 players.append(player)
-
+        pprint(players)
         if ganhador.retornarNumero() == carta1.retornarNumero() and ganhador.retornarNaipe() == carta1.retornarNaipe():
             players[0].adicionarRodada()
             print("jogador 1 ganhou")

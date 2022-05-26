@@ -31,14 +31,14 @@ class Player(Observador):
     def jogarCarta(self, carta_escolhida):
         for i in self.mao:
             if i.retornarNumero() == carta_escolhida['numero'] and i.retornarNaipe() == carta_escolhida['naipe']:
-                self.mao.pop(self.mao.index(i))
                 self.cartasJogadas.append(carta_escolhida)
+                self.countCartas += 1
+                self.mao.pop(self.mao.index(i))
                 return True
 
     def limparCartasJogadas(self):
-        if len(self.cartasJogadas) > 0:
-            self.cartasJogadas = []
-            return True
+        self.cartasJogadas.clear()
+       
     
     def countCartasJogadas(self):
         self.countCartas += 1
@@ -59,10 +59,9 @@ class Player(Observador):
             count += 1
         return hands
     
-    def adicionarPonto(self):
+    def adicionarPonto(self, score: int) -> None:
         print('adicionando ponto')
-        self.pontos += 3
-        #self.cartasJogadas = []
+        self.pontos += score
     
     def adicionarRodada(self):
         self.rodadas += 1
@@ -79,6 +78,7 @@ class Player(Observador):
         self.mao = []
 
     def update(self):
+        print(f'-------------- {self.username} -------------------------------')
         print(
             'username: {}, posicao: {}, room: {}, src: {}, mao: {}, pontos: {}, rodadas: {}, primeiro: {}, ultimo: {}, friend: {}, rival1: {}, rival2: {}, id: {}, countCartas: {}, cartasJogadas: {}'.format(
                 self.username,
@@ -98,6 +98,7 @@ class Player(Observador):
                 self.cartasJogadas
             )
         )
+        print('-------------------------------------------------------')
 
     def subscribe(self):
         print('Opa, estou online')
