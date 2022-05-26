@@ -25,4 +25,4 @@ def on_cartaPlayer(data):
 
 
 if __name__ == "__main__":
-    socket.run(app, host="127.0.0.1", port=3000, debug=True)
+    socket.run(app, debug=True)
