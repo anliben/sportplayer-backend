@@ -1,9 +1,8 @@
-from pprint import pprint
 import random
 from shared.player import Player
 from .engine import Engine
 from shared.baralho import Baralho
-from flask_socketio import SocketIO, send, emit, join_room, leave_room, rooms
+from flask_socketio import emit, join_room
 
 engine = Engine()
 
@@ -11,129 +10,154 @@ engine = Engine()
 class SocketCashGamex1:
     def __init__(self, socket):
         self.socket = socket
-        self.room = self.socket['room']
+        self.room = self.socket["room"]
         self.pontos = 1
         join_room(self.room)
 
+        # Captura o evento enviado
+        event = self.socket["request"]
 
-        if self.socket['request'] == 'addPlayer':
-            self.insertPlayer()
+        # Define a ação executada com base no evento
+        match event:
+            # Adicionar novo usuário
+            case "addPlayer":
+                self.insertPlayer()
 
-        elif self.socket['request'] == 'jogarCarta':
-            self.jogarCarta()
-        
-        elif self.socket['request'] == 'truco':
-            self.pontos += 3
-            self.truco()
-        
-        elif self.socket['request'] == 'increase':
-            self.pontos += 3
-            self.increase()
-            print('alguem pediu increase')
-        
-        elif self.socket['request'] == 'escape':
-            self.pontos = 1
-            print('alguem pediu escape')
+            # Jogar uma carta
+            case "jogarCarta":
+                self.jogarCarta()
 
-        elif self.socket['request'] == 'accept':
-            self.pontos = 3
-            print('alguem aceitou')
-        
-        # código comentado para nova tarefa
-        """ players = engine.find_player_begin(self.room)
-        for i in players:
-            i.update() """
-    
+            # Pedir truco
+            case "truco":
+                self.pontos += 3
+                self.truco()
+
+            # Subir a aposta (quando pedido truco)
+            case "increase":
+                self.pontos += 3
+                self.increase()
+                print("alguem pediu increase")
+
+            # Fugir da mão jogada (quando pedido truco)
+            case "escape":
+                self.pontos = 1
+                print("alguem pediu escape")
+
+            # Aceitar o pedido de aumento de aposta (quando aumentado o truco)
+            case "accept":
+                self.pontos = 3
+                print("alguem aceitou")
+
     def truco(self):
-        player = engine.find_player('1')
-        
-        emit('truco', {
-            'jogador': self.socket['jogador'],
-            'jogadores': [player[0], player[1]],
-        }, broadcast=True)
-    
+        player = engine.find_player("1")
+
+        emit(
+            "truco",
+            {
+                "jogador": self.socket["jogador"],
+                "jogadores": [player[0], player[1]],
+            },
+            broadcast=True,
+        )
+
     def increase(self):
-        player = engine.find_player('1')
-        
-        emit('increase', {
-            'jogador': self.socket['jogador'],
-            'jogadores': [player[0], player[1]],
-        }, broadcast=True)
+        player = engine.find_player("1")
+
+        emit(
+            "increase",
+            {
+                "jogador": self.socket["jogador"],
+                "jogadores": [player[0], player[1]],
+            },
+            broadcast=True,
+        )
 
     def escape(self):
-        player = engine.find_player('1')
-        
-        emit('truco', {
-            'jogador': self.socket['jogador'],
-            'jogadores': [player[0], player[1]],
-        }, broadcast=True)
-    
-    def accept(self):
-        player = engine.find_player('1')
-        
-        emit('truco', {
-            'jogador': self.socket['jogador'],
-            'jogadores': [player[0], player[1]],
-        }, broadcast=True)
-    
-    def jogarCarta(self):
-        manilha = self.socket['manilha']
-        numero = self.socket['carta']['numero']
-        naipe = self.socket['carta']['naipe']
-        index = self.socket['carta']['index']
+        player = engine.find_player("1")
 
-        player = engine.find_player('1')
+        emit(
+            "truco",
+            {
+                "jogador": self.socket["jogador"],
+                "jogadores": [player[0], player[1]],
+            },
+            broadcast=True,
+        )
+
+    def accept(self):
+        player = engine.find_player("1")
+
+        emit(
+            "truco",
+            {
+                "jogador": self.socket["jogador"],
+                "jogadores": [player[0], player[1]],
+            },
+            broadcast=True,
+        )
+
+    def jogarCarta(self):
+        manilha = self.socket["manilha"]
+        numero = self.socket["carta"]["numero"]
+        naipe = self.socket["carta"]["naipe"]
+        index = self.socket["carta"]["index"]
+
+        player = engine.find_player("1")
 
         engine.jogarCarta(
-            self.socket['room'],
-            {
-                'numero': numero, 'naipe': naipe,
-                'index': index}, self.socket['jogador'])
-                        
-        #engine.countCartasJogadas(self.socket['room'], self.socket['jogador'])
+            self.socket["room"],
+            {"numero": numero, "naipe": naipe, "index": index},
+            self.socket["jogador"],
+        )
 
-        emit('jogarCarta', {
-            'numero': numero,
-            'naipe': naipe,
-            'index': index,
-            'jogador': self.socket['jogador'],
-            'jogadores': [player[0], player[1]]
-        }, broadcast=True)
-        
-        if len(player[0]['mao']) == 0 and len(player[1]['mao']) == 0:
-            self.nova_rodada('1')
+        # engine.countCartasJogadas(self.socket['room'], self.socket['jogador'])
+
+        emit(
+            "jogarCarta",
+            {
+                "numero": numero,
+                "naipe": naipe,
+                "index": index,
+                "jogador": self.socket["jogador"],
+                "jogadores": [player[0], player[1]],
+            },
+            broadcast=True,
+        )
+
+        if len(player[0]["mao"]) == 0 and len(player[1]["mao"]) == 0:
+            self.nova_rodada("1")
         try:
             ganhador = engine.verificarGanhador(
-                player[0]['cartasJogadas'][-1],
-                player[1]['cartasJogadas'][-1],
-                manilha)
-            engine.adicionarRodada('1',
-                                   player[0]['cartasJogadas'][0],
-                                   player[1]['cartasJogadas'][0], ganhador)
+                player[0]["cartasJogadas"][-1], player[1]["cartasJogadas"][-1], manilha
+            )
+            engine.adicionarRodada(
+                "1",
+                player[0]["cartasJogadas"][0],
+                player[1]["cartasJogadas"][0],
+                ganhador,
+            )
 
-            engine.limparCartaJogada('1')
+            engine.limparCartaJogada("1")
 
-            players = engine.find_player('1')
-            if player[0]['rodadas'] >= 2:
-                engine.adicionarPonto('1', player[0]['username'], self.pontos)
-                self.nova_rodada('1')
-            if player[1]['rodadas'] >= 2:
-                engine.adicionarPonto('1', player[1]['username'], self.pontos)
-                self.nova_rodada('1')
-            emit('rodada', {
-                'jogadores': players
-            }, broadcast=True)
+            players = engine.find_player("1")
+            if player[0]["rodadas"] >= 2:
+                engine.adicionarPonto("1", player[0]["username"], self.pontos)
+                self.nova_rodada("1")
+            if player[1]["rodadas"] >= 2:
+                engine.adicionarPonto("1", player[1]["username"], self.pontos)
+                self.nova_rodada("1")
+            emit("rodada", {"jogadores": players}, broadcast=True)
         except:
             pass
-        if player[0]['rodadas'] >= 2:
-            engine.adicionarPonto('1', player[0]['username'], self.pontos)
-            self.nova_rodada('1')
-        if player[1]['rodadas'] >= 2:
-            engine.adicionarPonto('1', player[1]['username'], self.pontos)
-            self.nova_rodada('1')
+        if player[0]["rodadas"] >= 2:
+            engine.adicionarPonto("1", player[0]["username"], self.pontos)
+            self.nova_rodada("1")
+        if player[1]["rodadas"] >= 2:
+            engine.adicionarPonto("1", player[1]["username"], self.pontos)
+            self.nova_rodada("1")
 
     def nova_rodada(self, room):
-        print('indo para nova rodada')
+        print("indo para nova rodada")
         baralho = Baralho()
         baralho.embaralhar()
         baralho.definirVira(baralho)
@@ -145,28 +169,28 @@ class SocketCashGamex1:
         players[0].rodadas = 0
         players[1].rodadas = 0
         player = engine.find_player(room)
-        emit('novaMao', {
-            'jogadores': [
-                player[0],
-                player[1]]
-        }, broadcast=True)
+        emit("novaMao", {"jogadores": [player[0], player[1]]}, broadcast=True)
 
     def insertPlayer(self):
         player = Player(self.socket)
         engine.insertPlayer(player)
 
-        players = engine.find_player('1')
+        players = engine.find_player("1")
 
         if len(players) >= 2:
             jogador1, jogador2, vira, manilha = self.organizar_playersx1()
-            print('jogador1', jogador1)
-            print('jogador2', jogador2)
+            print("jogador1", jogador1)
+            print("jogador2", jogador2)
 
-            emit('findPlayersx1', {
-                'jogadores': [jogador1.data(), jogador2.data()],
-                'vira': vira,
-                'manilha': manilha,
-            }, broadcast=True)
+            emit(
+                "findPlayersx1",
+                {
+                    "jogadores": [jogador1.data(), jogador2.data()],
+                    "vira": vira,
+                    "manilha": manilha,
+                },
+                broadcast=True,
+            )
 
     def organizar_playersx1(self):
         baralho = Baralho()
@@ -181,12 +205,12 @@ class SocketCashGamex1:
         manilha = baralho.retornaManilhas()
         if jogador[0].rodadas == 0 and jogador[1].rodadas == 0:
             if jogador[0].pontos == 0 and jogador[1].pontos == 0:
-                jogadores = ['jogador1', 'jogador2']
+                jogadores = ["jogador1", "jogador2"]
                 sorteado = random.choice(jogadores)
-                if sorteado == 'jogador1':
+                if sorteado == "jogador1":
                     jogador[0].primeiro = True
                     jogador[1].ultimo = True
-                elif sorteado == 'jogador2':
+                elif sorteado == "jogador2":
                     jogador[1].primeiro = True
                     jogador[0].ultimo = True
 
