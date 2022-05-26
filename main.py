@@ -13,6 +13,10 @@ app.config["SECRET_KEY"] = "ADSDASDASD4234X3"
 cors = CORS(app, resources={r"*": {"origins": "*"}})
 socket = SocketIO(app, cors_allowed_origins="*")
 
+app.get('/')
+def index():
+    return "Hello World!"
+
 
 @socket.on("addPlayerCashGameX1")
 def on_addPlayer(data):
