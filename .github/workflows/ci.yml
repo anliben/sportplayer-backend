@@ -6,10 +6,10 @@ on:
 
 jobs:
   build:
-    run-on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@1
+        uses: actions/checkout@v1
       - name: Deploy para o server
         uses: easingthemes/ssh-deploy@develop
         env: 
@@ -18,5 +18,4 @@ jobs:
           SOURCE: "sport-player"
           REMOTE_HOST: ${{secrets.REMOTE_HOST}}
           REMOTE_USER: ${{secrets.REMOTE_USER}}
-          REMOTE_PORT: ${{secrets.REMOTE_PORT}}
           TARGET: ${{secrets.REMOTE_TARGET}}
