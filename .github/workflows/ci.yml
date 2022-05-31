@@ -1,0 +1,22 @@
+name: Joao victor Server
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build:
+    run-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@1
+      - name: Deploy para o server
+        uses: easingthemes/ssh-deploy@develop
+        env: 
+          SSH_PRIVATE: ${{secrets.SERVER_SSH_KEY}}
+          ARGS: "-rltgoDzvO --dedlete"
+          SOURCE: "sport-player"
+          REMOTE_HOST: ${{secrets.REMOTE_HOST}}
+          REMOTE_USER: ${{secrets.REMOTE_USER}}
+          REMOTE_PORT: ${{secrets.REMOTE_PORT}}
+          TARGET: ${{secrets.REMOTE_TARGET}}

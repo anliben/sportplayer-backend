@@ -17,6 +17,9 @@ app.get('/')
 def index():
     return "Hello World!"
 
+@socket.on('removePlayerCashGameX1')
+def on_disconnect(data):
+    SocketCashGamex1(data)
 
 @socket.on("addPlayerCashGameX1")
 def on_addPlayer(data):

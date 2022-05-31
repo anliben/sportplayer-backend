@@ -1,4 +1,6 @@
 import random
+
+from regex import P
 from shared.player import Player
 from .engine import Engine
 from shared.baralho import Baralho
@@ -20,8 +22,8 @@ class SocketCashGamex1:
             socket (_type_): _description_
         """
         self.socket = socket
-        self.room = self.socket["room"]
-        self.pontos = 1
+        self.room: str = self.socket["room"]
+        self.pontos: int = 1
         join_room(self.room)
 
         # Captura o evento enviado
@@ -29,32 +31,35 @@ class SocketCashGamex1:
 
         # Adiciona um novo usuario
         if event == "addPlayer":
-            self.addPlayer()
+            self.insertPlayer()
 
         # Jogar uma nova carta
         elif event == "jogarCarta":
             self.jogarCarta()
 
         # Pedir Truco
-        elif event == 'truco':
+        elif event == "truco":
             self.pontos = 3
             self.truco()
 
         # Subir aposta (quando pedido truco)
-        elif event == 'increase':
+        elif event == "increase":
             self.pontos += 3
             self.increase()
 
         # Fugir da mao jogada (quando pedido truco)
-        elif event == 'escape':
+        elif event == "escape":
             self.pontos = 1
             self.escape()
 
         # Aceitar o pedido de aumento da aposta (quando pedido truco)
-        elif event == 'accept':
+        elif event == "accept":
             self.pontos = 3
             self.accept()
 
+        # Desconectar do jogo
+        elif event == "disconnect":
+            engine.removePlayer(self.room, self.socket["username"])
 
     def truco(self):
         player = engine.find_player("1")
@@ -84,7 +89,7 @@ class SocketCashGamex1:
         player = engine.find_player("1")
 
         emit(
-            "truco",
+            "escape",
             {
                 "jogador": self.socket["jogador"],
                 "jogadores": [player[0], player[1]],
@@ -96,7 +101,7 @@ class SocketCashGamex1:
         player = engine.find_player("1")
 
         emit(
-            "truco",
+            "accept",
             {
                 "jogador": self.socket["jogador"],
                 "jogadores": [player[0], player[1]],
