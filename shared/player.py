@@ -1,7 +1,4 @@
 from .observador import Observador
-from kivy.storage.jsonstore import JsonStore
-
-db = JsonStore("db.json")
 
 
 class Player(Observador):

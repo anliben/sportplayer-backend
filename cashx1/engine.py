@@ -11,7 +11,30 @@ class Engine:
         self.players = []
 
     def insertPlayer(self, player: Type[Observador]):
-        self.players.append(player)
+        if len(self.players) > 1:
+            for one_player in self.players:
+                print(one_player)
+                if one_player.username != player.username:
+                    print(one_player, 'nao estava no jogo')
+                    self.players.append(player)
+        else:
+            self.players.append(player)
+    
+    def removePlayer(self, room: str, username: str):
+        """Remover Player
+
+        NOTE:
+            for player in self.players:
+                if player.room == room and player.username == username:
+                    self.players.remove(player)
+
+        Args:
+            room (string): Sala para filtragem dos players
+            username (string): Nome do player a qual deseja remover
+        """
+        for player in self.players:
+            if player.room == room and player.username == username:
+                self.players.remove(player)
 
     def criarMaoJogador(self, room):
         baralho = Baralho()
