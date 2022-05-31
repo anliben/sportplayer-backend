@@ -11,7 +11,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
       - name: Deploy para o server
-        uses: easingthemes/ssh-deploy@develop
+        uses: easingthemes/ssh-deploy@main
         env: 
           SSH_PRIVATE: ${{secrets.SERVER_SSH_KEY}}
           ARGS: "-rltgoDzvO --dedlete"
