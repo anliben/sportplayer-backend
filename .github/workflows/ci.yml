@@ -13,9 +13,9 @@ jobs:
       - name: Deploy para o server
         uses: easingthemes/ssh-deploy@main
         env: 
-          SSH_PRIVATE: ${{secrets.SERVER_SSH_KEY}}
+          SSH_PRIVATE_KEY: ${{secrets.SERVER_SSH_KEY}}
           ARGS: "-rltgoDzvO --dedlete"
-          SOURCE: "sport-player"
+          SOURCE: "dist/"
           REMOTE_HOST: ${{secrets.REMOTE_HOST}}
           REMOTE_USER: ${{secrets.REMOTE_USER}}
           TARGET: ${{secrets.REMOTE_TARGET}}
